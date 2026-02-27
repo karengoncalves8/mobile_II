@@ -4,11 +4,11 @@ class Celsius extends TemperatureScale{
 
     Celsius() : super("Celsius", "°C");
 
-    double toFahrenheit(int value) {
+    double toFahrenheit(double value) {
       return (value * 1.8) + 32;
     }
 
-    double toKelvin(int value) {
+    double toKelvin(double value) {
       return value + 273;
     }
 }
