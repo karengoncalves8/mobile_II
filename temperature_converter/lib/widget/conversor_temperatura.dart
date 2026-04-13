@@ -84,111 +84,151 @@ class _ConversorTemperaturaState extends State<ConversorTemperatura> {
     return Form(
       key: _formKey,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              TextFormField(
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: "Valor a ser convertido",
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Insira um valor";
-                  }
-                  if (double.tryParse(value) == null) {
-                    return "Apenas números são permitidos";
-                  }
-                  return null;
-                },
-                onSaved: (newValue) {
-                  _inputedTemperature = double.parse(newValue!);
-                },
-              ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const gap = 12.0;
+              const iconWidth = 24.0;
+              const buttonWidth = 120.0;
+              const minFieldWidth = 220.0;
 
-              const SizedBox(height: 20),
-              DropdownButtonFormField<TemperatureScale>(
-                decoration: const InputDecoration(
-                  labelText: "Selecione a unidade de medida a ser convertida",
-                ),
-                initialValue: _selectedInputScale,
-                items: _scalesOptions
-                    .map(
-                      (option) => DropdownMenuItem(
-                        value: option,
-                        child: Text(option.getName),
+              const minContentWidth =
+                  (minFieldWidth * 3) + buttonWidth + iconWidth + (gap * 4);
+
+              final fieldWidth = (constraints.maxWidth - buttonWidth - iconWidth - (gap * 4)) / 3;
+              final safeFieldWidth = fieldWidth < minFieldWidth ? minFieldWidth : fieldWidth;
+
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: constraints.maxWidth < minContentWidth
+                        ? minContentWidth
+                        : constraints.maxWidth,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: safeFieldWidth,
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: "Valor a ser convertido",
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Insira um valor";
+                            }
+                            if (double.tryParse(value) == null) {
+                              return "Apenas numeros sao permitidos";
+                            }
+                            return null;
+                          },
+                          onSaved: (newValue) {
+                            _inputedTemperature = double.parse(newValue!);
+                          },
+                        ),
                       ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    if (value != null) {
-                      _selectedInputScale = value;
-                      _convertedTemperature = null;
-                    }
-                  });
-                  _formKey.currentState?.validate();
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return "Selecione uma opção";
-                  }
-                  if (value.getName == _selectedConvertedScale.getName) {
-                    return "A unidade de medida deve ser diferente da unidade de conversão";
-                  }
-                  return null;
-                },
-              ),
-
-              Icon(
-                Icons.swap_horiz,
-                color: Colors.lightBlue,
-                size: 24.0,
-                semanticLabel: 'Text to announce in accessibility modes',
-              ),
-
-              const SizedBox(height: 20),
-              DropdownButtonFormField<TemperatureScale>(
-                decoration: const InputDecoration(
-                  labelText: "Selecione a unidade a desejada",
-                ),
-                initialValue: _selectedConvertedScale,
-                items: _scalesOptions
-                    .map(
-                      (option) => DropdownMenuItem(
-                        value: option,
-                        child: Text(option.getName),
+                      const SizedBox(width: gap),
+                      SizedBox(
+                        width: safeFieldWidth,
+                        child: DropdownButtonFormField<TemperatureScale>(
+                          decoration: const InputDecoration(
+                            labelText: "Selecione a unidade de medida a ser convertida",
+                          ),
+                          initialValue: _selectedInputScale,
+                          items: _scalesOptions
+                              .map(
+                                (option) => DropdownMenuItem(
+                                  value: option,
+                                  child: Text(option.getName),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              if (value != null) {
+                                _selectedInputScale = value;
+                                _convertedTemperature = null;
+                              }
+                            });
+                            _formKey.currentState?.validate();
+                          },
+                          validator: (value) {
+                            if (value == null) {
+                              return "Selecione uma opcao";
+                            }
+                            if (value.getName == _selectedConvertedScale.getName) {
+                              return "A unidade de medida deve ser diferente da unidade de conversao";
+                            }
+                            return null;
+                          },
+                        ),
                       ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    if (value != null) {
-                      _selectedConvertedScale = value;
-                      _convertedTemperature = null;
-                    }
-                  });
-                  _formKey.currentState?.validate();
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return "Selecione uma opção";
-                  }
-                  if (value.getName == _selectedInputScale.getName) {
-                    return "A unidade de medida deve ser diferente da unidade de conversão";
-                  }
-                  return null;
-                },
-              ),
-
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _convertTemperature,
-                child: const Text("Converter"),
-              ),
-            ],
+                      const SizedBox(width: gap),
+                      const SizedBox(
+                        width: iconWidth,
+                        child: Icon(
+                          Icons.swap_horiz,
+                          color: Colors.lightBlue,
+                          size: 24.0,
+                        ),
+                      ),
+                      const SizedBox(width: gap),
+                      SizedBox(
+                        width: safeFieldWidth,
+                        child: DropdownButtonFormField<TemperatureScale>(
+                          decoration: const InputDecoration(
+                            labelText: "Selecione a unidade desejada",
+                          ),
+                          initialValue: _selectedConvertedScale,
+                          items: _scalesOptions
+                              .map(
+                                (option) => DropdownMenuItem(
+                                  value: option,
+                                  child: Text(option.getName),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              if (value != null) {
+                                _selectedConvertedScale = value;
+                                _convertedTemperature = null;
+                              }
+                            });
+                            _formKey.currentState?.validate();
+                          },
+                          validator: (value) {
+                            if (value == null) {
+                              return "Selecione uma opcao";
+                            }
+                            if (value.getName == _selectedInputScale.getName) {
+                              return "A unidade de medida deve ser diferente da unidade de conversao";
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: gap),
+                      SizedBox(
+                        width: buttonWidth,
+                        child: ElevatedButton(
+                          onPressed: _convertTemperature,
+                          child: const Text("Converter"),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
 
           const SizedBox(height: 20),
