@@ -1,48 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_list/models/shopping_item.dart';
 
 class NewItemForm extends StatefulWidget {
-  final Function(String) onSubmit;
+  final ValueChanged<ShoppingItem> onItemAdded;
 
-  const NewItemForm({
-    super.key,
-    required this.onSubmit,
-  });
+  const NewItemForm({required this.onItemAdded, super.key});
 
   @override
   State<NewItemForm> createState() => _NewItemFormState();
 }
 
 class _NewItemFormState extends State<NewItemForm> {
-  final TextEditingController _controller = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _itemController;
+
+  @override
+  void initState() {
+    super.initState();
+    _itemController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _itemController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      final newItem = ShoppingItem(name: _itemController.text.trim());
+      widget.onItemAdded(newItem);
+      _itemController.clear();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextFormField(
-            controller: _controller,
-            decoration: const InputDecoration(
-              labelText: 'Novo item',
+    return Form(
+      key: _formKey,
+      child: Row(
+        children: [
+          Expanded(
+            child: TextFormField(
+              controller: _itemController,
+              decoration: const InputDecoration(
+                labelText: 'Novo Item',
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Por favor, insira um item';
+                }
+                return null;
+              },
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Por favor, insira um item';
-              }
-              return null;
-            },
           ),
-        ),
-        IconButton(
-          onPressed: () {
-            if (_controller.text.isNotEmpty) {
-              widget.onSubmit(_controller.text);
-              _controller.clear();
-            }
-          },
-          icon: const Icon(Icons.add),
-        )
-      ],
+          const SizedBox(width: 10),
+          ElevatedButton(
+            onPressed: _submit,
+            child: const Text('Adicionar'),
+          ),
+        ],
+      ),
     );
   }
 }
