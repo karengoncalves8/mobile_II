@@ -1,0 +1,13 @@
+{
+  "@@locale": "es",
+  "appTitle": "Configurar Preferencias",
+  "welcome": "Bienvenido!",
+  "nameLabel": "Nombre",
+  "themeLabel": "Tema",
+  "languageLabel": "Idioma",
+  "lightTheme": "Claro",
+  "darkTheme": "Oscuro",
+  "portugueseLanguage": "Portugués",
+  "englishLanguage": "Inglés",
+  "spanishLanguage": "Español"
+}
